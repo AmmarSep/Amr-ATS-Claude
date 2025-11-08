@@ -46,9 +46,8 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtil.generateJwtToken(authentication);
 
-            Optional<UserDetail> userDetailOpt = userDetailRepository.findByEmailEquals(loginRequest.getEmail());
-            if (userDetailOpt.isPresent()) {
-                UserDetail userDetail = userDetailOpt.get();
+            UserDetail userDetail = userDetailRepository.findByEmailEquals(loginRequest.getEmail());
+            if (userDetail != null) {
                 String role = userDetail.getUserGroup().getShortGroup();
 
                 LoginResponse loginResponse = new LoginResponse(
@@ -79,9 +78,8 @@ public class AuthController {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String email = userDetails.getUsername();
 
-            Optional<UserDetail> userDetailOpt = userDetailRepository.findByEmailEquals(email);
-            if (userDetailOpt.isPresent()) {
-                UserDetail userDetail = userDetailOpt.get();
+            UserDetail userDetail = userDetailRepository.findByEmailEquals(email);
+            if (userDetail != null) {
 
                 UserDTO userDTO = new UserDTO(
                         userDetail.getUserId(),

@@ -57,8 +57,8 @@ public class ApplicationRestController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
 
-            Optional<UserDetail> userOpt = userDetailRepository.findByEmailEquals(email);
-            if (!userOpt.isPresent()) {
+            UserDetail user = userDetailRepository.findByEmailEquals(email);
+            if (user == null) {
                 return ResponseEntity.status(401).body(ApiResponse.error("User not found"));
             }
 
@@ -72,7 +72,7 @@ public class ApplicationRestController {
             }
 
             // Save resume file
-            UploadFile uploadedResume = uploadFileService.saveFile(resume, userOpt.get().getUsername());
+            UploadFile uploadedResume = uploadFileService.saveFile(resume, user.getUsername());
 
             // Extract text from resume
             String resumeText = uploadFileService.extractTextFromFile(uploadedResume);
@@ -80,7 +80,7 @@ public class ApplicationRestController {
             // Create application
             Application application = new Application();
             application.setJobPosting(jobOpt.get());
-            application.setCandidate(userOpt.get());
+            application.setCandidate(user);
             application.setResume(uploadedResume);
             application.setNotes(notes);
 
@@ -102,13 +102,11 @@ public class ApplicationRestController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
-            Optional<UserDetail> userOpt = userDetailRepository.findByEmailEquals(email);
+            UserDetail user = userDetailRepository.findByEmailEquals(email);
 
-            if (!userOpt.isPresent()) {
+            if (user == null) {
                 return ResponseEntity.status(401).body(ApiResponse.error("User not found"));
             }
-
-            UserDetail user = userOpt.get();
             String role = user.getUserGroup().getShortGroup();
 
             List<Application> applications;
