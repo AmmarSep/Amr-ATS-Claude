@@ -89,14 +89,14 @@ public class AdminRestController {
             }
 
             // Check if user already exists
-            Optional<UserDetail> existingUser = userDetailRepository.findByEmailEquals(email);
-            if (existingUser.isPresent()) {
+            UserDetail existingUser = userDetailRepository.findByEmailEquals(email);
+            if (existingUser != null) {
                 return ResponseEntity.badRequest().body(ApiResponse.error("User with this email already exists"));
             }
 
             // Get recruiter group
-            Optional<UserGroup> recruiterGroupOpt = userGroupRepository.findByShortGroupEquals("REC");
-            if (!recruiterGroupOpt.isPresent()) {
+            UserGroup recruiterGroup = userGroupRepository.findByShortGroupEquals("REC");
+            if (recruiterGroup == null) {
                 return ResponseEntity.status(500).body(ApiResponse.error("Recruiter group not found"));
             }
 
@@ -108,7 +108,7 @@ public class AdminRestController {
             recruiter.setUserUuid(UUID.randomUUID().toString());
             recruiter.setCreatedOn(new Timestamp(System.currentTimeMillis()));
             recruiter.setIsLocked(false);
-            recruiter.setUserGroup(recruiterGroupOpt.get());
+            recruiter.setUserGroup(recruiterGroup);
 
             UserDetail savedRecruiter = userDetailRepository.save(recruiter);
             UserDTO userDTO = convertToDTO(savedRecruiter);
@@ -131,15 +131,15 @@ public class AdminRestController {
             }
 
             // Check if user already exists
-            Optional<UserDetail> existingUser = userDetailRepository.findByEmailEquals(email);
-            if (existingUser.isPresent()) {
+            UserDetail existingUser = userDetailRepository.findByEmailEquals(email);
+            if (existingUser != null) {
                 return ResponseEntity.badRequest().body(ApiResponse.error("User with this email already exists"));
             }
 
             // Get user group
             String shortGroup = (role != null && !role.isEmpty()) ? role : "USR";
-            Optional<UserGroup> userGroupOpt = userGroupRepository.findByShortGroupEquals(shortGroup);
-            if (!userGroupOpt.isPresent()) {
+            UserGroup userGroup = userGroupRepository.findByShortGroupEquals(shortGroup);
+            if (userGroup == null) {
                 return ResponseEntity.status(500).body(ApiResponse.error("User group not found"));
             }
 
@@ -151,7 +151,7 @@ public class AdminRestController {
             user.setUserUuid(UUID.randomUUID().toString());
             user.setCreatedOn(new Timestamp(System.currentTimeMillis()));
             user.setIsLocked(false);
-            user.setUserGroup(userGroupOpt.get());
+            user.setUserGroup(userGroup);
 
             UserDetail savedUser = userDetailRepository.save(user);
             UserDTO userDTO = convertToDTO(savedUser);

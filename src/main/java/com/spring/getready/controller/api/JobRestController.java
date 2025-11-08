@@ -77,8 +77,8 @@ public class JobRestController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
 
-            Optional<UserDetail> userOpt = userDetailRepository.findByEmailEquals(email);
-            if (!userOpt.isPresent()) {
+            UserDetail user = userDetailRepository.findByEmailEquals(email);
+            if (user == null) {
                 return ResponseEntity.status(401).body(ApiResponse.error("User not found"));
             }
 
@@ -91,7 +91,7 @@ public class JobRestController {
             jobPosting.setJobType(request.getJobType());
             jobPosting.setPostedOn(new Timestamp(System.currentTimeMillis()));
             jobPosting.setIsActive(true);
-            jobPosting.setPostedBy(userOpt.get());
+            jobPosting.setUserDetail(user);
 
             if (request.getDeadline() != null && !request.getDeadline().isEmpty()) {
                 try {
@@ -177,9 +177,9 @@ public class JobRestController {
         dto.setDeadline(job.getDeadline());
         dto.setIsActive(job.getIsActive());
 
-        if (job.getPostedBy() != null) {
-            dto.setPostedByUsername(job.getPostedBy().getUsername());
-            dto.setPostedByEmail(job.getPostedBy().getEmail());
+        if (job.getUserDetail() != null) {
+            dto.setPostedByUsername(job.getUserDetail().getUsername());
+            dto.setPostedByEmail(job.getUserDetail().getEmail());
         }
 
         if (job.getApplications() != null) {

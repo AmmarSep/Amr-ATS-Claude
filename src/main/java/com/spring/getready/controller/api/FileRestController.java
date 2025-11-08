@@ -52,7 +52,7 @@ public class FileRestController {
         } catch (FileNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.status(500).build();
         }
     }
 
@@ -93,7 +93,7 @@ public class FileRestController {
         } catch (FileNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.status(500).build();
         }
     }
 }

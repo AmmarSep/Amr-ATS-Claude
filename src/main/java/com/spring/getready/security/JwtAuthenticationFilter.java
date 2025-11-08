@@ -42,9 +42,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwt != null && jwtUtil.validateJwtToken(jwt)) {
                 String email = jwtUtil.getEmailFromJwtToken(jwt);
 
-                Optional<UserDetail> userDetailOpt = userDetailRepository.findByEmailEquals(email);
-                if (userDetailOpt.isPresent()) {
-                    UserDetail userDetail = userDetailOpt.get();
+                UserDetail userDetail = userDetailRepository.findByEmailEquals(email);
+                if (userDetail != null) {
 
                     // Create Spring Security UserDetails
                     String role = "ROLE_" + userDetail.getUserGroup().getShortGroup();
